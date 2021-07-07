@@ -2,7 +2,7 @@
   "name": "custom-uniswap-v2-sdk",
   "license": "MIT",
   "version": "3.0.0",
-  "description": "Custom Uniswap SDK V2 to use for multiple chain",
+  "description": "Custom Uniswap SDK V2 to use for multiple chains",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
