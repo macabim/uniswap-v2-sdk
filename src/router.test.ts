@@ -3,6 +3,7 @@ import { Pair, Route, Trade } from './entities'
 import { Router } from './router'
 import invariant from 'tiny-invariant'
 import { CurrencyAmount, Percent, Ether, Token, WETH9 } from '@uniswap/sdk-core'
+import { FACTORY_ADDRESS, INIT_CODE_HASH } from './testConfig'
 
 function checkDeadline(deadline: string[] | string): void {
   expect(typeof deadline).toBe('string')
@@ -18,12 +19,16 @@ describe('Router', () => {
 
   const pair_0_1 = new Pair(
     CurrencyAmount.fromRawAmount(token0, JSBI.BigInt(1000)),
-    CurrencyAmount.fromRawAmount(token1, JSBI.BigInt(1000))
+    CurrencyAmount.fromRawAmount(token1, JSBI.BigInt(1000)),
+    FACTORY_ADDRESS,
+    INIT_CODE_HASH
   )
 
   const pair_weth_0 = new Pair(
     CurrencyAmount.fromRawAmount(WETH9[1], '1000'),
-    CurrencyAmount.fromRawAmount(token0, '1000')
+    CurrencyAmount.fromRawAmount(token0, '1000'),
+    FACTORY_ADDRESS,
+    INIT_CODE_HASH
   )
 
   describe('#swapCallParameters', () => {

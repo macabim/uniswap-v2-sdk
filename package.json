@@ -1,21 +1,21 @@
 {
-  "name": "@uniswap/v2-sdk",
+  "name": "custom-uniswap-v2-sdk",
   "license": "MIT",
   "version": "3.0.0",
-  "description": "🛠 An SDK for building applications on top of Uniswap V2",
+  "description": "Custom Uniswap SDK V2 to use for multiple chain",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist"
   ],
-  "repository": "https://github.com/Uniswap/uniswap-v2-sdk.git",
+  "repository": "https://github.com/gndplayground/uniswap-v2-sdk.git",
   "keywords": [
-    "uniswap",
-    "ethereum"
+    "swap",
+    "crytocurrency"
   ],
   "module": "dist/v2-sdk.esm.js",
   "scripts": {
-    "lint": "tsdx lint src test",
+    "lint": "tsdx lint src",
     "build": "tsdx build",
     "start": "tsdx watch",
     "test": "tsdx test",

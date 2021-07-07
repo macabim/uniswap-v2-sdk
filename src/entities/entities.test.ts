@@ -2,6 +2,7 @@ import JSBI from 'jsbi'
 import invariant from 'tiny-invariant'
 import { WETH9 as _WETH9, TradeType, Token, CurrencyAmount } from '@uniswap/sdk-core'
 import { Pair, Route, Trade } from '../index'
+import { FACTORY_ADDRESS, INIT_CODE_HASH } from '../testConfig'
 
 const ADDRESSES = [
   '0x0000000000000000000000000000000000000001',
@@ -33,15 +34,21 @@ describe('entities', () => {
         pairs = [
           new Pair(
             CurrencyAmount.fromRawAmount(tokens[0], decimalize(1, tokens[0].decimals)),
-            CurrencyAmount.fromRawAmount(tokens[1], decimalize(1, tokens[1].decimals))
+            CurrencyAmount.fromRawAmount(tokens[1], decimalize(1, tokens[1].decimals)),
+            FACTORY_ADDRESS,
+            INIT_CODE_HASH
           ),
           new Pair(
             CurrencyAmount.fromRawAmount(tokens[1], decimalize(1, tokens[1].decimals)),
-            CurrencyAmount.fromRawAmount(tokens[2], decimalize(1, tokens[2].decimals))
+            CurrencyAmount.fromRawAmount(tokens[2], decimalize(1, tokens[2].decimals)),
+            FACTORY_ADDRESS,
+            INIT_CODE_HASH
           ),
           new Pair(
             CurrencyAmount.fromRawAmount(tokens[2], decimalize(1, tokens[2].decimals)),
-            CurrencyAmount.fromRawAmount(WETH9, decimalize(1234, WETH9.decimals))
+            CurrencyAmount.fromRawAmount(WETH9, decimalize(1234, WETH9.decimals)),
+            FACTORY_ADDRESS,
+            INIT_CODE_HASH
           )
         ]
       })
@@ -80,7 +87,9 @@ describe('entities', () => {
             [
               new Pair(
                 CurrencyAmount.fromRawAmount(tokens[1], decimalize(5, tokens[1].decimals)),
-                CurrencyAmount.fromRawAmount(WETH9, decimalize(10, WETH9.decimals))
+                CurrencyAmount.fromRawAmount(WETH9, decimalize(10, WETH9.decimals)),
+                FACTORY_ADDRESS,
+                INIT_CODE_HASH
               )
             ],
             tokens[1],
@@ -131,7 +140,9 @@ describe('entities', () => {
                       decimalize(10, WETH9.decimals),
                       tokens[1].decimals === 9 ? JSBI.BigInt('30090280812437312') : JSBI.BigInt('30090270812437322')
                     )
-                  )
+                  ),
+                  FACTORY_ADDRESS,
+                  INIT_CODE_HASH
                 )
               ],
               tokens[1],
