@@ -16,6 +16,18 @@ Uniswap latest fixes, upgrade and hard to check what changes with the original U
 
 I forked and changes some code, so we can reuse Uniswap SDK without cloning and create our own.
 
+## Install
+
+```shell
+npm i custom-uniswap-v2-sdk
+```
+
+or
+
+```shell
+yarn add custom-uniswap-v2-sdk
+```
+
 ## Changes
 
 - The forked SDK won't export `FACTORY_ADDRESS` and `INIT_CODE_HASH` anymore.
