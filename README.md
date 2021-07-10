@@ -62,10 +62,26 @@ new Pair(currencyAmountA, tokenAmountB, factoryAddress, initCodeHash)
 }
 ```
 
-- Exported class `Pair` constructor now support custom Fees Numerator and Fees Denominator
+- Exported class `Pair` constructor now support custom fees numerator and fees denominator `(v3.1.0)`
 
-
+In the Uniswap SDK , `feesNumerator` and  `feesDenominator` are constant `JSBI.BigInt(997)` and `JSBI.BigInt(1000)`
 
 ```ts
-new Pair(currencyAmountA, tokenAmountB, factoryAddress, initCodeHash,feesNumerator, feesDenominator)
+export const _997 = JSBI.BigInt(997)
+
+export const _1000 = JSBI.BigInt(1000)
+```
+
+In `PancakeSwap` they change this to support different fee
+
+```ts
+export const FEES_NUMERATOR = JSBI.BigInt(9975);
+
+export const FEES_DENOMINATOR = JSBI.BigInt(10000);
+```
+
+So in the custom SDK, The`Pair` class now can change the fees. If you do not add to the constructor, default fees will be used.
+
+```ts
+new Pair(currencyAmountA, tokenAmountB, factoryAddress, initCodeHash, feesNumerator, feesDenominator)
 ```
