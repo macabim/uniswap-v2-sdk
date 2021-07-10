@@ -2,6 +2,7 @@ import { Token, WETH9, Price, CurrencyAmount } from '@uniswap/sdk-core'
 import { InsufficientInputAmountError } from '../errors'
 import { computePairAddress, Pair } from './pair'
 import { INIT_CODE_HASH, FACTORY_ADDRESS } from '../testConfig'
+import JSBI from 'jsbi'
 
 describe('computePairAddress', () => {
   it('should correctly compute the pool address', () => {
@@ -407,6 +408,28 @@ describe('Pair', () => {
       )
       expect(liquidityValue.currency.equals(tokenA)).toBe(true)
       expect(liquidityValue.quotient.toString()).toBe('917') // ceiling(1000 - (500 * (1 / 6)))
+    })
+
+    it('Should return input amount and output amount correctly with custom numerator and denominator ', async () => {
+      const tokenA = new Token(3, '0x0000000000000000000000000000000000000001', 18)
+      const tokenB = new Token(3, '0x0000000000000000000000000000000000000002', 18)
+      const pair = new Pair(
+        CurrencyAmount.fromRawAmount(tokenA, '1000000'),
+        CurrencyAmount.fromRawAmount(tokenB, '1000000'),
+        FACTORY_ADDRESS,
+        INIT_CODE_HASH,
+        //JSBI.BigInt(997)
+        JSBI.BigInt(9975),
+        JSBI.BigInt(10000)
+      )
+
+      const outputAmount = pair.getOutputAmount(CurrencyAmount.fromRawAmount(tokenA, '1000'))[0]
+
+      expect(outputAmount.toExact()).toBe('0.000000000000000996')
+
+      const inputAmount = pair.getInputAmount(CurrencyAmount.fromRawAmount(tokenA, '1000'))[0]
+
+      expect(inputAmount.toExact()).toBe('0.000000000000001004')
     })
   })
 })

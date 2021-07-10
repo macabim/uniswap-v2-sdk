@@ -4,7 +4,7 @@ import JSBI from 'jsbi'
 import { pack, keccak256 } from '@ethersproject/solidity'
 import { getCreate2Address } from '@ethersproject/address'
 
-import { MINIMUM_LIQUIDITY, FIVE, _997, _1000, ONE, ZERO } from '../constants'
+import { MINIMUM_LIQUIDITY, FIVE, ONE, ZERO } from '../constants'
 import { InsufficientReservesError, InsufficientInputAmountError } from '../errors'
 
 export const computePairAddress = ({
@@ -30,6 +30,8 @@ export class Pair {
   private readonly tokenAmounts: [CurrencyAmount<Token>, CurrencyAmount<Token>]
   private readonly factoryAddress: string
   private readonly initCodeHash: string
+  private readonly feesNumerator: JSBI
+  private readonly feesDenominator: JSBI
 
   public static getAddress(tokenA: Token, tokenB: Token, factoryAddress: string, initCodeHash: string): string {
     return computePairAddress({ initCodeHash, factoryAddress, tokenA, tokenB })
@@ -39,7 +41,9 @@ export class Pair {
     currencyAmountA: CurrencyAmount<Token>,
     tokenAmountB: CurrencyAmount<Token>,
     factoryAddress: string,
-    initCodeHash: string
+    initCodeHash: string,
+    feesNumerator: JSBI = JSBI.BigInt(997),
+    feesDenominator: JSBI = JSBI.BigInt(1000)
   ) {
     const tokenAmounts = currencyAmountA.currency.sortsBefore(tokenAmountB.currency) // does safety checks
       ? [currencyAmountA, tokenAmountB]
@@ -54,6 +58,8 @@ export class Pair {
     this.tokenAmounts = tokenAmounts as [CurrencyAmount<Token>, CurrencyAmount<Token>]
     this.factoryAddress = factoryAddress
     this.initCodeHash = initCodeHash
+    this.feesNumerator = feesNumerator
+    this.feesDenominator = feesDenominator
   }
 
   /**
@@ -124,9 +130,9 @@ export class Pair {
     }
     const inputReserve = this.reserveOf(inputAmount.currency)
     const outputReserve = this.reserveOf(inputAmount.currency.equals(this.token0) ? this.token1 : this.token0)
-    const inputAmountWithFee = JSBI.multiply(inputAmount.quotient, _997)
+    const inputAmountWithFee = JSBI.multiply(inputAmount.quotient, this.feesNumerator)
     const numerator = JSBI.multiply(inputAmountWithFee, outputReserve.quotient)
-    const denominator = JSBI.add(JSBI.multiply(inputReserve.quotient, _1000), inputAmountWithFee)
+    const denominator = JSBI.add(JSBI.multiply(inputReserve.quotient, this.feesDenominator), inputAmountWithFee)
     const outputAmount = CurrencyAmount.fromRawAmount(
       inputAmount.currency.equals(this.token0) ? this.token1 : this.token0,
       JSBI.divide(numerator, denominator)
@@ -140,7 +146,9 @@ export class Pair {
         inputReserve.add(inputAmount),
         outputReserve.subtract(outputAmount),
         this.factoryAddress,
-        this.initCodeHash
+        this.initCodeHash,
+        this.feesNumerator,
+        this.feesDenominator
       )
     ]
   }
@@ -157,8 +165,8 @@ export class Pair {
 
     const outputReserve = this.reserveOf(outputAmount.currency)
     const inputReserve = this.reserveOf(outputAmount.currency.equals(this.token0) ? this.token1 : this.token0)
-    const numerator = JSBI.multiply(JSBI.multiply(inputReserve.quotient, outputAmount.quotient), _1000)
-    const denominator = JSBI.multiply(JSBI.subtract(outputReserve.quotient, outputAmount.quotient), _997)
+    const numerator = JSBI.multiply(JSBI.multiply(inputReserve.quotient, outputAmount.quotient), this.feesDenominator)
+    const denominator = JSBI.multiply(JSBI.subtract(outputReserve.quotient, outputAmount.quotient), this.feesNumerator)
     const inputAmount = CurrencyAmount.fromRawAmount(
       outputAmount.currency.equals(this.token0) ? this.token1 : this.token0,
       JSBI.add(JSBI.divide(numerator, denominator), ONE)
@@ -169,7 +177,9 @@ export class Pair {
         inputReserve.add(inputAmount),
         outputReserve.subtract(outputAmount),
         this.factoryAddress,
-        this.initCodeHash
+        this.initCodeHash,
+        this.feesNumerator,
+        this.feesDenominator
       )
     ]
   }

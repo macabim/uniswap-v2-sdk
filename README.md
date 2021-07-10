@@ -61,3 +61,11 @@ new Pair(currencyAmountA, tokenAmountB, factoryAddress, initCodeHash)
     //
 }
 ```
+
+- Exported class `Pair` constructor now support custom Fees Numerator and Fees Denominator
+
+
+
+```ts
+new Pair(currencyAmountA, tokenAmountB, factoryAddress, initCodeHash,feesNumerator, feesDenominator)
+```
