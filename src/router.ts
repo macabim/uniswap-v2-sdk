@@ -2,6 +2,15 @@ import { Token, Currency, CurrencyAmount, Percent, TradeType, validateAndParseAd
 import { Trade } from 'entities'
 import invariant from 'tiny-invariant'
 
+export interface EtherMethods {
+  swapExactETHForTokensSupportingFeeOnTransferTokens?: string
+  swapExactETHForTokens?: string
+  swapExactTokensForETHSupportingFeeOnTransferTokens?: string
+  swapExactTokensForETH?: string
+  swapETHForExactTokens?: string
+  swapTokensForExactETH?: string
+}
+
 /**
  * Options for producing the arguments to send call to the router.
  */
@@ -25,6 +34,11 @@ export interface TradeOptions {
    * Whether any of the tokens in the path are fee on transfer tokens, which should be handled with special methods
    */
   feeOnTransfer?: boolean
+
+  /**
+   * On other chain the method maybe not have ETH in the method name. Use this options to change the method name.
+   */
+  etherMethods?: EtherMethods
 }
 
 export interface TradeOptionsDeadline extends Omit<TradeOptions, 'ttl'> {
@@ -92,6 +106,19 @@ export abstract class Router {
         : `0x${options.deadline.toString(16)}`
 
     const useFeeOnTransfer = Boolean(options.feeOnTransfer)
+    const customEtherMethods = options.etherMethods
+    const etherMethods = {
+      swapExactETHForTokensSupportingFeeOnTransferTokens:
+        customEtherMethods?.swapExactETHForTokensSupportingFeeOnTransferTokens ||
+        'swapExactETHForTokensSupportingFeeOnTransferTokens',
+      swapExactETHForTokens: customEtherMethods?.swapExactETHForTokens || 'swapExactETHForTokens',
+      swapExactTokensForETHSupportingFeeOnTransferTokens:
+        customEtherMethods?.swapExactTokensForETHSupportingFeeOnTransferTokens ||
+        'swapExactTokensForETHSupportingFeeOnTransferTokens',
+      swapExactTokensForETH: customEtherMethods?.swapExactTokensForETH || 'swapExactTokensForETH',
+      swapETHForExactTokens: customEtherMethods?.swapETHForExactTokens || 'swapETHForExactTokens',
+      swapTokensForExactETH: customEtherMethods?.swapTokensForExactETH || 'swapTokensForExactETH'
+    }
 
     let methodName: string
     let args: (string | string[])[]
@@ -99,12 +126,16 @@ export abstract class Router {
     switch (trade.tradeType) {
       case TradeType.EXACT_INPUT:
         if (etherIn) {
-          methodName = useFeeOnTransfer ? 'swapExactETHForTokensSupportingFeeOnTransferTokens' : 'swapExactETHForTokens'
+          methodName = useFeeOnTransfer
+            ? etherMethods.swapExactETHForTokensSupportingFeeOnTransferTokens
+            : etherMethods.swapExactETHForTokens
           // (uint amountOutMin, address[] calldata path, address to, uint deadline)
           args = [amountOut, path, to, deadline]
           value = amountIn
         } else if (etherOut) {
-          methodName = useFeeOnTransfer ? 'swapExactTokensForETHSupportingFeeOnTransferTokens' : 'swapExactTokensForETH'
+          methodName = useFeeOnTransfer
+            ? etherMethods.swapExactTokensForETHSupportingFeeOnTransferTokens
+            : etherMethods.swapExactTokensForETH
           // (uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
           args = [amountIn, amountOut, path, to, deadline]
           value = ZERO_HEX
@@ -120,12 +151,12 @@ export abstract class Router {
       case TradeType.EXACT_OUTPUT:
         invariant(!useFeeOnTransfer, 'EXACT_OUT_FOT')
         if (etherIn) {
-          methodName = 'swapETHForExactTokens'
+          methodName = etherMethods.swapETHForExactTokens
           // (uint amountOut, address[] calldata path, address to, uint deadline)
           args = [amountOut, path, to, deadline]
           value = amountIn
         } else if (etherOut) {
-          methodName = 'swapTokensForExactETH'
+          methodName = etherMethods.swapTokensForExactETH
           // (uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
           args = [amountOut, amountIn, path, to, deadline]
           value = ZERO_HEX
