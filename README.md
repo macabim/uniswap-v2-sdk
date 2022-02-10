@@ -39,14 +39,14 @@ yarn add custom-uniswap-v2-sdk
 ```ts
 // Example interface
 interface ComputePairAddressArg {
-    factoryAddress: string
-    initCodeHash: string
-    tokenA: Token
-    tokenB: Token
+  factoryAddress: string
+  initCodeHash: string
+  tokenA: Token
+  tokenB: Token
 }
 
 export function computePairAddress(arg: ComputePairAddressArg) {
-    // Example
+  // Example
 }
 ```
 
