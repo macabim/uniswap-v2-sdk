@@ -39,14 +39,14 @@ yarn add custom-uniswap-v2-sdk
 ```ts
 // Example interface
 interface ComputePairAddressArg {
-  factoryAddress: string
-  initCodeHash: string
-  tokenA: Token
-  tokenB: Token
+    factoryAddress: string
+    initCodeHash: string
+    tokenA: Token
+    tokenB: Token
 }
 
 export function computePairAddress(arg: ComputePairAddressArg) {
-  // Example
+    // Example
 }
 ```
 
@@ -86,4 +86,25 @@ So in the custom SDK, The`Pair` class now can change the fees. If you do not add
 
 ```ts
 new Pair(currencyAmountA, tokenAmountB, factoryAddress, initCodeHash, feesNumerator, feesDenominator)
+```
+
+- `Router.swapCallParameters` support custom contract method name that have `ETH` name in it.
+
+For example, in the Avalance chain some contracts are using `swapExactAVAXForTokens` instead `swapExactETHForTokens`
+
+```ts
+Router.swapCallParameters(trade, {
+  feeOnTransfer: false,
+  allowedSlippage: new Percent(JSBI.BigInt(Math.floor(slippageTolerance)), JSBI.BigInt(10000)),
+  recipient: wallet.account,
+  ttl: deadline,
+  etherMethods: {
+    wapETHForExactTokens: 'swapAVAXForExactTokens',
+    swapExactETHForTokens: 'swapExactAVAXForTokens',
+    swapExactETHForTokensSupportingFeeOnTransferTokens: 'swapExactAVAXForTokensSupportingFeeOnTransferTokens',
+    swapExactTokensForETH: 'swapExactTokensForAVAX',
+    swapExactTokensForETHSupportingFeeOnTransferTokens: 'swapExactTokensForAVAXSupportingFeeOnTransferTokens',
+    swapTokensForExactETH: 'swapTokensForExactAVAX'
+  }
+})
 ```
