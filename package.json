@@ -15,6 +15,7 @@
   ],
   "module": "dist/v2-sdk.esm.js",
   "scripts": {
+    "prepare": "npm run build",
     "lint": "tsdx lint src",
     "build": "tsdx build",
     "start": "tsdx watch",
