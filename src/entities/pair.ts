@@ -7,6 +7,8 @@ import { getCreate2Address } from '@ethersproject/address'
 import { MINIMUM_LIQUIDITY, FIVE, ONE, ZERO } from '../constants'
 import { InsufficientReservesError, InsufficientInputAmountError } from '../errors'
 
+const _pairAddressesCache: { [id: string] : string; } = {};
+
 export const computePairAddress = ({
   initCodeHash,
   factoryAddress,
@@ -19,11 +21,19 @@ export const computePairAddress = ({
   tokenB: Token
 }): string => {
   const [token0, token1] = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA] // does safety checks
-  return getCreate2Address(
+
+  const key = initCodeHash + factoryAddress + token0.address + token1.address
+  if (_pairAddressesCache[key]) {
+    return _pairAddressesCache[key]
+  }
+  
+  _pairAddressesCache[key] = getCreate2Address(
     factoryAddress,
     keccak256(['bytes'], [pack(['address', 'address'], [token0.address, token1.address])]),
     initCodeHash
   )
+
+  return _pairAddressesCache[key]
 }
 export class Pair {
   public readonly liquidityToken: Token
