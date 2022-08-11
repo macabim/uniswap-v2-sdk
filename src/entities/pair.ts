@@ -159,7 +159,8 @@ export class Pair {
         this.factoryAddress,
         this.initCodeHash,
         this.feesNumerator,
-        this.feesDenominator
+        this.feesDenominator,
+        this.liquidityToken
       )
     ]
   }
@@ -190,7 +191,8 @@ export class Pair {
         this.factoryAddress,
         this.initCodeHash,
         this.feesNumerator,
-        this.feesDenominator
+        this.feesDenominator,
+        this.liquidityToken
       )
     ]
   }
