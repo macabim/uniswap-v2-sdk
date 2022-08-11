@@ -53,12 +53,13 @@ export class Pair {
     factoryAddress: string,
     initCodeHash: string,
     feesNumerator: JSBI = JSBI.BigInt(997),
-    feesDenominator: JSBI = JSBI.BigInt(1000)
+    feesDenominator: JSBI = JSBI.BigInt(1000),
+    liquidityToken: Token
   ) {
     const tokenAmounts = currencyAmountA.currency.sortsBefore(tokenAmountB.currency) // does safety checks
       ? [currencyAmountA, tokenAmountB]
       : [tokenAmountB, currencyAmountA]
-    this.liquidityToken = new Token(
+    this.liquidityToken = liquidityToken || new Token(
       tokenAmounts[0].currency.chainId,
       Pair.getAddress(tokenAmounts[0].currency, tokenAmounts[1].currency, factoryAddress, initCodeHash),
       18,
