@@ -40,7 +40,7 @@ export class Pair {
   private readonly tokenAmounts: [CurrencyAmount<Token>, CurrencyAmount<Token>]
   private readonly factoryAddress: string
   private readonly initCodeHash: string
-  private readonly feesNumerator: JSBI
+  public readonly feesNumerator: JSBI
   private readonly feesDenominator: JSBI
 
   public static getAddress(tokenA: Token, tokenB: Token, factoryAddress: string, initCodeHash: string): string {
