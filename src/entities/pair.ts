@@ -41,7 +41,7 @@ export class Pair {
   private readonly factoryAddress: string
   private readonly initCodeHash: string
   public readonly feesNumerator: JSBI
-  private readonly feesDenominator: JSBI
+  public readonly feesDenominator: JSBI
 
   public static getAddress(tokenA: Token, tokenB: Token, factoryAddress: string, initCodeHash: string): string {
     return computePairAddress({ initCodeHash, factoryAddress, tokenA, tokenB })
