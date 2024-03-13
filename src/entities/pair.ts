@@ -54,7 +54,7 @@ export class Pair {
     initCodeHash: string,
     feesNumerator: JSBI = JSBI.BigInt(997),
     feesDenominator: JSBI = JSBI.BigInt(1000),
-    liquidityToken: Token
+    liquidityToken?: Token
   ) {
     const tokenAmounts = currencyAmountA.currency.sortsBefore(tokenAmountB.currency) // does safety checks
       ? [currencyAmountA, tokenAmountB]
